@@ -11,7 +11,7 @@ const inter = Inter({ subsets: ['latin'] })
 const BASE_URL = "http://127.0.0.1:5000/";
 const client = axios.create({
   baseURL: BASE_URL,
-  timeout: (10 * 60 * 1000),
+  timeout: (20 * 60 * 1000),
 });
 
 class Home extends React.Component {
@@ -20,7 +20,7 @@ class Home extends React.Component {
 
     this.local_image_file = null;
 
-    this.state = { is_generating: false, local_file_url: "", remote_url: "", elements: [], comments_by_elements: [], comment_by_context: "" }
+    this.state = { is_generating: false, local_file_url: "", remote_url: "", elements: [], comments_by_elements: [], comments_by_context: [] }
 
     this.when_dropped = this.when_dropped.bind(this);
     this.try_to_generate = this.try_to_generate.bind(this);
@@ -67,13 +67,13 @@ class Home extends React.Component {
         console.log("data_dict:", data_dict);
         const elements = data_dict["elements"];
         const comments_by_elements = data_dict["comments_by_elements"];
-        const comment_by_context = data_dict["comment_by_context"]
+        const comments_by_context = data_dict["comments_by_context"]
 
         that.setState({
           is_generating: false,
           elements: elements,
           comments_by_elements: comments_by_elements,
-          comment_by_context: comment_by_context
+          comments_by_context: comments_by_context
         });
       })
       .catch(function (error) {
@@ -110,13 +110,13 @@ class Home extends React.Component {
         console.log("data_dict:", data_dict);
         const elements = data_dict["elements"];
         const comments_by_elements = data_dict["comments_by_elements"];
-        const comment_by_context = data_dict["comment_by_context"]
+        const comments_by_context = data_dict["comments_by_context"]
 
         that.setState({
           is_generating: false,
           elements: elements,
           comments_by_elements: comments_by_elements,
-          comment_by_context: comment_by_context
+          comments_by_context: comments_by_context
         });
       }).catch(err => {
         console.error("err:", err);
@@ -161,7 +161,7 @@ class Home extends React.Component {
 
     const elements = this.state.elements;
     const comments_by_elements = this.state.comments_by_elements;
-    const comment_by_context = this.state.comment_by_context;
+    const comments_by_context = this.state.comments_by_context;
     const should_show_result = (elements.length > 0);
     var local_image_path = "";
     if (this.local_image_file != null) {
@@ -224,8 +224,17 @@ class Home extends React.Component {
             );
           })}
 
-          <h4 className='text-xl text-slate-700'>Sacarstic comment by context:</h4>
-          <p className='text-sm text-slate-500'>{comment_by_context}</p>
+          <h4 className='text-xl text-slate-700'>Sacarstic comments by context:</h4>
+          <ul>
+          {comments_by_context.map((item, idx) => {
+            return (
+              <li className='text-sm text-slate-500'>
+                {idx + 1}: {item}
+              </li>
+            );
+          })}
+          </ul>
+          {/* <p className='text-sm text-slate-500'>{comments_by_context}</p> */}
         </div>
       </main>
     );
