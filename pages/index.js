@@ -20,7 +20,7 @@ class Home extends React.Component {
 
     this.local_image_file = null;
 
-    this.state = { is_generating: false, local_file_url: "", remote_url: "", elements: [], comments_by_elements: [], comments_by_context: [] }
+    this.state = { is_generating: false, local_file_url: "", remote_url: "", elements: [], comments_by_elements: [], comments_by_context: [], face_info: {} }
 
     this.when_dropped = this.when_dropped.bind(this);
     this.try_to_generate = this.try_to_generate.bind(this);
@@ -68,12 +68,14 @@ class Home extends React.Component {
         const elements = data_dict["elements"];
         const comments_by_elements = data_dict["comments_by_elements"];
         const comments_by_context = data_dict["comments_by_context"]
+        const face_info = data_dict["face"]
 
         that.setState({
           is_generating: false,
           elements: elements,
           comments_by_elements: comments_by_elements,
-          comments_by_context: comments_by_context
+          comments_by_context: comments_by_context,
+          face_info: face_info
         });
       })
       .catch(function (error) {
@@ -111,12 +113,14 @@ class Home extends React.Component {
         const elements = data_dict["elements"];
         const comments_by_elements = data_dict["comments_by_elements"];
         const comments_by_context = data_dict["comments_by_context"]
+        const face_info = data_dict["face"]
 
         that.setState({
           is_generating: false,
           elements: elements,
           comments_by_elements: comments_by_elements,
-          comments_by_context: comments_by_context
+          comments_by_context: comments_by_context,
+          face_info: face_info
         });
       }).catch(err => {
         console.error("err:", err);
@@ -167,6 +171,11 @@ class Home extends React.Component {
     if (this.local_image_file != null) {
       local_image_path = this.local_image_file.path;
     }
+
+    const face_exist = this.state.face_info["face_exist"];
+    const face_desc = this.state.face_info["face_desc"];
+    const comments_for_face = this.state.face_info["comments_for_face"];
+    const should_render_face_area = (face_exist != null && face_exist == 1);
     return (
       <main className="container mx-auto min-h-screen py-10 px-2">
         <Head>
@@ -226,15 +235,33 @@ class Home extends React.Component {
 
           <h4 className='text-xl text-slate-700'>Sacarstic comments by context:</h4>
           <ul>
-          {comments_by_context.map((item, idx) => {
-            return (
-              <li className='text-sm text-slate-500'>
-                {idx + 1}: {item}
-              </li>
-            );
-          })}
+            {comments_by_context.map((item, idx) => {
+              return (
+                <li className='text-sm text-slate-500'>
+                  {idx + 1}: {item}
+                </li>
+              );
+            })}
           </ul>
-          {/* <p className='text-sm text-slate-500'>{comments_by_context}</p> */}
+
+          {
+            should_render_face_area == false ? null : (
+              // <div>ahfasdfa</div>
+              <div>
+                <h4 className='text-xl text-slate-700'>Sacarstic comments for face: {face_desc}</h4>
+                <ul>
+                  {comments_for_face.map((item, idx) => {
+                    return (
+                      <li className='text-sm text-slate-500'>
+                        {idx + 1}: {item}
+                      </li>
+                    );
+                  })}
+                </ul>
+              </div>
+            )
+          }
+
         </div>
       </main>
     );
